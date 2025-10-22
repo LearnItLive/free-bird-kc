@@ -1,0 +1,21 @@
+{
+  "common": {
+    "viewDetails": "View Details",
+    "learnMoreAbout": "Learn more about",
+    "paginationPrevious": "Previous",
+    "paginationNext": "Next",
+    "paginationPortfolioPrev": "Previous Portfolio",
+    "paginationPortfolioNext": "Next Portfolio"
+  },
+  "headerOffcanvas": {
+    "description": "Fractional Chief of Staff and operations partner, on your terms.",
+    "buttonLabel": "Schedule a Consultation"
+  },
+  "navigation": {
+    "buttonLabel": "Get in Touch"
+  },
+  "footer": {
+    "copyright": "© {{ year }} Kelly Comiskey Consulting",
+    "_comment": ""
+  }
+}

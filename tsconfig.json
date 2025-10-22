@@ -1,8 +1,23 @@
 {
-  "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"],
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/components/*": ["./src/layouts/components/*"],
+      "@/shortcodes/*": ["./src/layouts/shortcodes/*"],
+      "@/helpers/*": ["./src/layouts/helpers/*"],
+      "@/*": ["./src/*"]
+    },
+    "target": "es2017",
+    "allowJs": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "jsx": "react",
+    "isolatedModules": true,
+    "incremental": true,
+    "allowSyntheticDefaultImports": true,
     "strictNullChecks": true
-  }
+  },
+  "include": [".astro/types.d.ts", "**/*"],
+  "exclude": ["dist", "public"]
 }
