@@ -264,7 +264,7 @@
   @apply flex items-center gap-2;
 
   .logo {
-    @apply flex items-center gap-x-4 max-h-12 w-auto;
+    @apply flex items-center gap-x-4 h-10 md:h-12 w-auto;
   }
 
   .logo-text {
@@ -272,7 +272,7 @@
   }
 
   .logo-alternate {
-    @apply hidden max-h-12 w-auto;
+    @apply hidden h-10 md:h-12 w-auto;
   }
 }
 

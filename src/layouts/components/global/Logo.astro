@@ -48,32 +48,13 @@ if (Astro.props.height) {
       <>
         <img
           src={src ? src : logo}
-          class="logo"
+          class="logo h-10 md:h-12 w-auto"
           alt={toSentenceCase("Brand logo of " + title)}
-          style={{
-            height: logoHeight,
-            width: logoWidth,
-          }}
-          width={parseInt(logoWidth)}
-          height={parseInt(logoHeight)}
+          style={{}}
           loading="eager"
           decoding="async"
         />
-        {logoAlternate && (
-          <img
-            src={logoAlternate}
-            class="logo-alternate"
-            alt={toSentenceCase("Brand logo of " + title)}
-            style={{
-              height: logoHeight,
-              width: logoWidth,
-            }}
-            width={parseInt(logoWidth)}
-            height={parseInt(logoHeight)}
-            loading="eager"
-            decoding="async"
-          />
-        )}
+        { /* Alternate logo not rendered; pass src prop with white logo where needed */ }
 
         {logoText && (
           <span class="logo-text" set:html={markdownify(logoText)} />
