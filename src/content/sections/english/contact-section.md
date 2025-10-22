@@ -73,37 +73,35 @@ form:
   # note: |
   #   Your data is safe with us. We respect your privacy and never share your information. <br /> Read our [Privacy Policy](/privacy-policy/).
   inputs:
-    - label: ""
+    - label: "Name"
       placeholder: "Full Name *"
-      name: "Full Name" # This is crucial. Its indicate under which name you want to receive this field data
+      name: "Name"
       required: true
       halfWidth: true
       defaultValue: ""
-    - label: ""
+    - label: "Email"
       placeholder: "Email Address *"
-      name: "Email Address" # This is crucial. Its indicate under which name you want to receive this field data
+      name: "Email"
       required: true
       type: "email"
       halfWidth: true
       defaultValue: ""
-    - label: ""
-      placeholder: "Subject *"
-      name: "Subject" # This is crucial. Its indicate under which name you want to receive this field data
+    - label: "Topic"
+      placeholder: "Select a topic"
+      name: "Topic"
       required: false
       halfWidth: true
       dropdown:
-        type: "" # select | search - default is select
-        search: # if type is search then it will work
-          placeholder: ""
+        type: "select"
         items:
-          - label: "General Inquiry"
-            value: "General Inquiry"
+          - label: "Inquiry"
+            value: "Inquiry"
+            selected: true
+          - label: "Retainer Quote"
+            value: "Retainer Quote"
             selected: false
-          - label: "Partnership Opportunity"
-            value: "Partnership Opportunity"
-            selected: false
-          - label: "Investment Opportunity"
-            value: "Investment Opportunity"
+          - label: "Project"
+            value: "Project"
             selected: false
     # Remove extra dropdown to simplify the form
     - label: ""

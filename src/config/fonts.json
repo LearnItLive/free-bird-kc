@@ -15,16 +15,16 @@
       "locallyHosted": true
     },
     {
-      "name": "Atkinson Hyperlegible",
+      "name": "Playfair Display",
       "src": [
-        { "path": "/public/fonts/atkinson-regular.woff", "style": "normal", "weight": "400" },
-        { "path": "/public/fonts/atkinson-bold.woff", "style": "normal", "weight": "700" }
+        { "weight": "600" },
+        { "weight": "700" }
       ],
       "preload": true,
       "display": "swap",
       "cssVariable": "font-secondary",
-      "provider": "local-hosted",
-      "fallback": "system-ui, sans-serif",
+      "provider": "google-fonts",
+      "fallback": "ui-serif, Georgia, serif",
       "locallyHosted": true
     }
   ]
