@@ -4,21 +4,28 @@
   --leading-body: 1.8;
   --leading-inherit: inherit;
 
-  /* Colors */
-  --color-primary: #0d0f01;
-  --color-secondary: #bcd4ff;
-  --color-accent: #e3ff04;
-  --color-accent-blue: #1601ac;
-  --color-body: #fff;
-  --color-body-dark: #070800;
-  --color-border-light: #e5e5e5;
-  --color-border-dark: #292525;
-  --color-theme-dark: #0e1118;
-  --color-theme-darker: #131312;
-  --color-theme-light: #f6f5f3;
-  --color-text-default: #2e2e2e;
-  --color-dark: #0a0c00;
-  --color-light: #f6f5f3;
+  /* Brand Colors */
+  --brand-teal: #0F6B6D;
+  --brand-charcoal: #1F2933;
+  --brand-slate: #475569;
+  --brand-offwhite: #F7F8F9;
+  --brand-gold: #CFA856;
+
+  /* Mapped Theme Tokens */
+  --color-primary: var(--brand-teal);
+  --color-secondary: var(--brand-slate);
+  --color-accent: var(--brand-gold);
+  --color-accent-blue: var(--brand-teal);
+  --color-body: var(--brand-offwhite);
+  --color-body-dark: var(--brand-charcoal);
+  --color-border-light: #e5e7eb;
+  --color-border-dark: #334155;
+  --color-theme-dark: var(--brand-charcoal);
+  --color-theme-darker: #0f172a;
+  --color-theme-light: var(--brand-offwhite);
+  --color-text-default: var(--brand-charcoal);
+  --color-dark: var(--brand-charcoal);
+  --color-light: var(--brand-offwhite);
 
   /* Screen */
   --breakpoint-*: initial;
