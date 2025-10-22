@@ -250,7 +250,7 @@
 /* Fit To Screen (Prevent Screen Flash) */
 .fit-to-screen {
   @apply flex flex-col justify-start;
-  @apply min-h-[102vh];
+  @apply min-h-[102vh] overflow-x-hidden;
 }
 
 /* Logo */
@@ -258,7 +258,7 @@
   @apply flex items-center gap-2;
 
   .logo {
-    @apply flex items-center gap-x-4;
+    @apply flex items-center gap-x-4 max-h-12 w-auto;
   }
 
   .logo-text {
@@ -266,7 +266,7 @@
   }
 
   .logo-alternate {
-    @apply hidden;
+    @apply hidden max-h-12 w-auto;
   }
 }
 

@@ -59,11 +59,8 @@ const rawSvgs = import.meta.glob("/src/assets/images/**/*.svg", {
 
 const isValidPath = !!images[normalizedSrc];
 
-if (!isValidPath) {
-  console.error(
-    `\x1b[31mImage not found - ${normalizedSrc}.\x1b[0m Make sure the image is in the /src/assets/images folder.`,
-  );
-}
+// If not found in src/assets, we will gracefully fall back to a standard <img>
+// using the original src (e.g., files in /public/images)
 
 let SVG;
 if (inlineSvg && normalizedSrc.includes(".svg")) {
@@ -114,3 +111,6 @@ if (inlineSvg && normalizedSrc.includes(".svg")) {
       />
     ))
 }
+{ !isValidPath && (
+  <img src={src} alt={alt || ""} width={width as any} height={height as any} class={Astro.props.class} style={style} loading={loading || "lazy"} decoding={decoding || "async"} {...rest} />
+)}

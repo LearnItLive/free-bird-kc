@@ -48,7 +48,7 @@ const fontSize = titleSize ? fontSizeMap[titleSize] : fontSizeMap["display-1"];
   <div class="container">
     <div class="mx-auto max-w-7xl space-y-7 text-center md:space-y-10">
       { /* world overlay */ }
-      <img src="/images/world-overlay-min.png" alt="" aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 mx-auto opacity-30 object-contain max-w-[1100px] w-full" />
+      <img src="/images/world-overlay-min.png" alt="" aria-hidden="true" class="pointer-events-none absolute left-1/2 top-0 -z-10 mx-auto opacity-20 -translate-x-1/2 object-contain max-w-[1100px] w-full" />
       {
         title && (
           <h1
@@ -107,11 +107,7 @@ const fontSize = titleSize ? fontSizeMap[titleSize] : fontSizeMap["display-1"];
             class="mx-auto mt-10 -mb-24 max-w-4xl md:mt-20 md:-mb-32">
             <picture>
               <source srcset="/images/hero-mobile.jpg" media="(max-width: 640px)" />
-              <OptimizedImage
-                src={image}
-                alt={title || "Banner"}
-                class="h-110 w-full object-cover md:h-135"
-              />
+              <img src={image} alt={title || "Banner"} class="h-110 w-full object-cover md:h-135" width="1200" height="600" loading="eager" decoding="async" />
             </picture>
           </div>
         )
