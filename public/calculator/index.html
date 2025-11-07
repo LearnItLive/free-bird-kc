@@ -52,6 +52,13 @@
           </div>
 
           <div class="field">
+            <label for="body_weight_lb">Body weight (lb)</label>
+            <input id="body_weight_lb" name="body_weight_lb" type="number" inputmode="decimal" step="0.1" min="1" aria-describedby="weight-help">
+            <div id="weight-help" class="help">Optional. Used for frame-related traits and sport suggestions.</div>
+            <div class="error" data-error-for="body_weight_lb"></div>
+          </div>
+
+          <div class="field">
             <label for="torso_length_in">Torso length (hip line–head top, in)</label>
             <input id="torso_length_in" name="torso_length_in" type="number" inputmode="decimal" step="0.1" min="1" aria-describedby="torso-help">
             <div id="torso-help" class="help">Optional. If omitted, derived as height − leg. Includes head—acceptable for model.</div>
@@ -65,7 +72,7 @@
         </div>
 
         <div class="form-note" role="status" aria-live="polite">
-          Required fields marked with *. Units are inches.
+          Required fields marked with *. Units are inches (lengths) and pounds (weight).
         </div>
       </form>
     </section>
@@ -96,6 +103,12 @@
         <div class="actions">
           <button type="button" id="copySummaryBtn" class="secondary">Copy summary</button>
         </div>
+      </div>
+
+      <div id="sportsCard" class="card">
+        <h3>Sports Suggestions (prototype)</h3>
+        <div class="help muted">Based on current heuristics; will refine when research data is ready.</div>
+        <div id="sportsList" class="list" role="list"></div>
       </div>
     </section>
   </main>

@@ -27,7 +27,11 @@ function computeRatios(inputs){
   const leg_pct = leg / height;
   const ape_index_in = inputs.wingspan_in - height;
   const arm_span_ratio = inputs.wingspan_in / height;
-  return { leg_pct, torso_pct, ape_index_in, arm_span_ratio, height_in: height };
+  // BMI (imperial) if body weight provided
+  const bmi = (inputs.body_weight_lb && inputs.body_weight_lb > 0)
+    ? ((inputs.body_weight_lb / (height*height)) * 703)
+    : null;
+  return { leg_pct, torso_pct, ape_index_in, arm_span_ratio, height_in: height, bmi };
 }
 
 // Scoring functions
@@ -82,6 +86,109 @@ function classifyAthlete(r, height_in){
     return { type: "Bench Specialist", bullets: COPY.athlete["Bench Specialist"] };
   }
   return { type: "Balanced All-Rounder", bullets: COPY.athlete["Balanced All-Rounder"] };
+}
+
+// Trait engine (prototype)
+function computeTraits(inputs, r){
+  const traits = new Set();
+  // stature
+  if (r.height_in >= 73) traits.add("tall");
+  if (r.height_in <= 64) traits.add("short_stature");
+
+  // limb proportions
+  if (r.leg_pct > FLAGS.leg_pct.normal_high) traits.add("long_legs");
+  if (r.leg_pct < FLAGS.leg_pct.normal_low) traits.add("short_legs");
+  if (r.ape_index_in > FLAGS.ape_index_in.normal_high) traits.add("long_arms");
+  if (r.ape_index_in < FLAGS.ape_index_in.normal_low) traits.add("short_arms");
+  if (r.torso_pct > FLAGS.torso_pct.normal_high) traits.add("long_torso");
+  if (r.torso_pct < FLAGS.torso_pct.normal_low) traits.add("short_torso");
+  if (r.torso_pct >= 0.31) traits.add("compact_torso");
+
+  // frame via BMI if available
+  let frame = "unknown";
+  if (r.bmi != null){
+    if (r.bmi < 21) { traits.add("light_frame"); frame = "light"; }
+    else if (r.bmi > 27) { traits.add("heavy_frame"); frame = "heavy"; }
+    else { traits.add("mid_frame"); frame = "mid"; }
+  }
+
+  // balanced
+  if (!traits.has("long_legs") && !traits.has("short_legs") && !traits.has("long_arms") && !traits.has("short_arms")){
+    traits.add("balanced");
+  }
+
+  return { traits, frame, bmi: r.bmi };
+}
+
+// Sports suitability (prototype)
+function computeSportsSuitability(traitsInfo, r, inputs, movementScoresMap){
+  const results = [];
+  for (const sport of SPORTS){
+    const rule = SPORTS_RULES[sport.id];
+    if (!rule) continue;
+    // movement-based component
+    let moveSum = 0, moveW = 0;
+    for (const [mv, w] of Object.entries(rule.movementWeights || {})){
+      const s = movementScoresMap[mv];
+      if (typeof s === "number"){
+        moveSum += s * w;
+        moveW += w;
+      }
+    }
+    const movementComponent = moveW > 0 ? (moveSum / moveW) : 0;
+
+    // trait bonuses
+    let traitBonus = 0;
+    for (const [t, w] of Object.entries(rule.traitWeights || {})){
+      if (traitsInfo.traits.has(t)) traitBonus += w;
+    }
+
+    // anchor-based contributions
+    let anchorBonus = 0;
+    if (rule.anchors){
+      if (rule.anchors.height){
+        anchorBonus += scoreFromAnchors(r.height_in, ANCHORS[rule.anchors.height] || [] ) || 0;
+      }
+      if (rule.anchors.ape){
+        anchorBonus += scoreFromAnchors(r.ape_index_in, ANCHORS[rule.anchors.ape] || [] ) || 0;
+      }
+    }
+
+    // Combine: movement already on 1..10 scale, trait bonuses are small (0..~2), anchors 0..~10; normalize anchors to a smaller influence
+    const combined = movementComponent + traitBonus + (anchorBonus > 0 ? (anchorBonus/6) : 0);
+    const score = clamp01(combined);
+    const rationale = buildSportRationale(sport.id, traitsInfo, r, inputs, movementScoresMap);
+    results.push({ sport: sport.name, id: sport.id, score, rationale });
+  }
+  results.sort((a,b) => b.score - a.score);
+  return results;
+}
+
+function buildSportRationale(sportId, traitsInfo, r, inputs, movementScoresMap){
+  switch(sportId){
+    case "weightlifting":
+      return "Based on Olympic lift proxies (snatch/C&J) and compact leverage.";
+    case "powerlifting":
+      return "Powered by squat/bench/deadlift proxies and arm/leg leverage.";
+    case "rowing":
+      return "Height and reach support efficient stroke length.";
+    case "basketball":
+      return "Height and reach provide advantages for play above the rim.";
+    case "distance_running":
+      return traitsInfo.traits.has("light_frame") ? "Light frame and leg proportion suit distance efficiency." : "Leg proportion suggests running potential; refine with frame data.";
+    case "sprinting":
+      return "Explosive movement proxies (jump/press) indicate sprint potential.";
+    case "gymnastics":
+      return "Shorter stature and lighter frame benefit strength-to-weight skills.";
+    case "climbing":
+      return "Reach (ape index) and lighter frame aid hold span and movement.";
+    case "swimming":
+      return "Height and reach correlate with stroke length and propulsion.";
+    case "crossfit":
+      return "Balanced profile across varied movement families.";
+    default:
+      return "Trait-driven heuristic suggestion.";
+  }
 }
 
 // Flags
@@ -216,10 +323,45 @@ function renderConclusion(type, bullets){
   });
 }
 
+function renderSports(sports){
+  const list = document.getElementById("sportsList");
+  list.innerHTML = "";
+  sports.forEach(({ sport, score, rationale }) => {
+    const row = document.createElement("div");
+    row.className = "score-row";
+    row.setAttribute("role", "listitem");
+    const name = document.createElement("div");
+    name.className = "score-name";
+    name.textContent = sport;
+    const bar = document.createElement("div");
+    bar.className = "bar";
+    bar.setAttribute("role", "progressbar");
+    bar.setAttribute("aria-valuemin", "0");
+    bar.setAttribute("aria-valuemax", "10");
+    bar.setAttribute("aria-valuenow", score.toFixed(1));
+    const fill = document.createElement("span");
+    fill.style.width = `${(score/10)*100}%`;
+    bar.appendChild(fill);
+    const val = document.createElement("div");
+    val.className = "score-val";
+    val.textContent = score.toFixed(1);
+    const rationaleEl = document.createElement("div");
+    rationaleEl.className = "rationale";
+    rationaleEl.textContent = rationale;
+
+    row.appendChild(name);
+    row.appendChild(bar);
+    row.appendChild(val);
+    list.appendChild(row);
+    list.appendChild(rationaleEl);
+  });
+}
+
 function renderResults(model){
   renderRatios(model.ratios, model.flags);
   renderScores(model.scores);
   renderConclusion(model.athlete_type, model.technique_focus);
+  renderSports(model.sports);
 }
 
 // Model assembly
@@ -265,8 +407,14 @@ function buildModel(inputs){
     scores: scoreEntries,
     athlete_type: classification.type,
     summary: "", // Optional: could compile a longer narrative
-    technique_focus: classification.bullets
+    technique_focus: classification.bullets,
+    sports: []
   };
+
+  // Sports suggestions
+  const movementScoresMap = Object.fromEntries(scoreEntries.map(e => [e.movement, e.score]));
+  const traitsInfo = computeTraits(inputs, ratios);
+  model.sports = computeSportsSuitability(traitsInfo, ratios, inputs, movementScoresMap);
   return model;
 }
 
@@ -278,7 +426,9 @@ function parseInputs(){
   const wingspan_in = Number(document.getElementById("wingspan_in").value);
   const torso_raw = document.getElementById("torso_length_in").value;
   const torso_length_in = torso_raw ? Number(torso_raw) : null;
-  return { sex, height_in, leg_length_in, wingspan_in, torso_length_in };
+  const body_weight_raw = document.getElementById("body_weight_lb").value;
+  const body_weight_lb = body_weight_raw ? Number(body_weight_raw) : null;
+  return { sex, height_in, leg_length_in, wingspan_in, torso_length_in, body_weight_lb };
 }
 
 function clearErrors(){
@@ -314,6 +464,10 @@ function validateInputs(inputs){
     setError("torso_length_in", "Torso length must be positive if provided.");
     ok = false;
   }
+  if (inputs.body_weight_lb != null && !(inputs.body_weight_lb > 0)){
+    setError("body_weight_lb", "Body weight must be positive if provided.");
+    ok = false;
+  }
   return ok;
 }
 
@@ -338,6 +492,7 @@ function handleReset(){
   document.getElementById("scoresList").innerHTML = "";
   document.getElementById("athleteType").textContent = "—";
   document.getElementById("focusBullets").innerHTML = "";
+  document.getElementById("sportsList").innerHTML = "";
   clearErrors();
 }
 
@@ -356,6 +511,12 @@ function copySummary(){
     const val = row.querySelector(".score-val")?.textContent || "";
     scoresLines.push(`${name}: ${val}/10`);
   });
+  let sportsLines = [];
+  document.querySelectorAll("#sportsList .score-row").forEach(row => {
+    const name = row.querySelector(".score-name")?.textContent || "";
+    const val = row.querySelector(".score-val")?.textContent || "";
+    sportsLines.push(`${name}: ${val}/10`);
+  });
   const bullets = Array.from(document.querySelectorAll("#focusBullets li")).map(li => `- ${li.textContent}`).join("\n");
   const text = `Anthropometric Movement Summary
 
@@ -363,6 +524,9 @@ ${ratiosText}
 
 Top Movements:
 ${scoresLines.slice(0,5).join("\n")}
+
+Top Sports (prototype):
+${sportsLines.slice(0,5).join("\n")}
 
 Athlete type: ${type}
 

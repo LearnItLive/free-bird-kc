@@ -32,6 +32,13 @@ const ANCHORS = {
   // Rowing
   height_row: [[60,3],[66,5.5],[72,8],[78,10]],
   ape_row: [[-2,4.5],[0,6],[2,8],[4,9.5]],
+
+  // Sports-specific anchors (prototype heuristics)
+  height_bball: [[64,2],[70,5],[76,8],[82,10]],
+  height_gym: [[60,10],[64,8],[68,5],[72,3]],
+  ape_climb: [[-2,4],[0,6],[2,8.5],[4,10]],
+  height_swim: [[60,4],[66,6],[72,8.5],[78,10]],
+  ape_swim: [[-2,4.5],[0,6],[2,8.5],[4,10]],
 };
 
 /* Flags thresholds for badges and extreme notes. */
@@ -128,5 +135,78 @@ window.ANCHORS = ANCHORS;
 window.FLAGS = FLAGS;
 window.COPY = COPY;
 window.MOVEMENTS = MOVEMENTS;
+
+// Sports categories and rule weights (prototype, to be replaced with research data)
+const SPORTS = [
+  { id: "weightlifting", name: "Olympic Weightlifting" },
+  { id: "powerlifting", name: "Powerlifting" },
+  { id: "rowing", name: "Rowing (erg/on-water)" },
+  { id: "basketball", name: "Basketball" },
+  { id: "distance_running", name: "Distance Running" },
+  { id: "sprinting", name: "Sprinting" },
+  { id: "gymnastics", name: "Gymnastics" },
+  { id: "climbing", name: "Climbing/Bouldering" },
+  { id: "swimming", name: "Swimming" },
+  { id: "crossfit", name: "CrossFit / Functional Fitness" },
+];
+
+// movementWeights: contribution from calculated movement scores (normalized internally)
+// traitWeights: additive bonuses for presence of a trait
+// anchors: optional additional anchor-based contributions by feature
+const SPORTS_RULES = {
+  weightlifting: {
+    movementWeights: { "Snatch": 0.5, "Clean & Jerk": 0.5 },
+    traitWeights: { short_arms: 0.4, compact_torso: 0.2 },
+    anchors: {}
+  },
+  powerlifting: {
+    movementWeights: { "Deadlift": 0.4, "Squat": 0.35, "Bench Press": 0.25 },
+    traitWeights: { long_arms: 0.4, long_legs: 0.1 },
+    anchors: {}
+  },
+  rowing: {
+    movementWeights: { "Rowing": 1.0 },
+    traitWeights: {},
+    anchors: { height: "height_row", ape: "ape_row" }
+  },
+  basketball: {
+    movementWeights: {},
+    traitWeights: {},
+    anchors: { height: "height_bball", ape: "ape_row" }
+  },
+  distance_running: {
+    movementWeights: {},
+    traitWeights: { light_frame: 1.2, long_legs: 0.6, heavy_frame: -1.0 },
+    anchors: {}
+  },
+  sprinting: {
+    movementWeights: { "Box Jump": 0.5, "Thruster": 0.3 },
+    traitWeights: { mid_frame: 0.3 },
+    anchors: {}
+  },
+  gymnastics: {
+    movementWeights: {},
+    traitWeights: { short_stature: 1.2, light_frame: 0.8, short_arms: 0.4, short_legs: 0.4 },
+    anchors: { height: "height_gym" }
+  },
+  climbing: {
+    movementWeights: {},
+    traitWeights: { light_frame: 1.0, long_arms: 0.8 },
+    anchors: { ape: "ape_climb" }
+  },
+  swimming: {
+    movementWeights: {},
+    traitWeights: {},
+    anchors: { height: "height_swim", ape: "ape_swim" }
+  },
+  crossfit: {
+    movementWeights: { "Snatch": 0.1, "Clean & Jerk": 0.1, "Squat": 0.1, "Deadlift": 0.1, "Bench Press": 0.1, "Overhead Press": 0.1, "Thruster": 0.1, "Box Jump": 0.1, "Wall Ball": 0.1, "Rowing": 0.1 },
+    traitWeights: { balanced: 0.5 },
+    anchors: {}
+  }
+};
+
+window.SPORTS = SPORTS;
+window.SPORTS_RULES = SPORTS_RULES;
 
 
