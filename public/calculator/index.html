@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Anthropometrics → Movement Suitability Calculator</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="container">
+    <h1>Anthropometric Movement Calculator</h1>
+    <p class="muted">Enter measurements (inches) to compute ratios, scores, ranked movements, and training focus. No data is stored.</p>
+  </header>
+
+  <main class="container grid">
+    <section class="panel" aria-labelledby="form-title">
+      <h2 id="form-title">Inputs</h2>
+      <form id="calcForm" novalidate>
+        <fieldset>
+          <legend class="sr-only">Athlete inputs</legend>
+
+          <div class="field">
+            <label for="sex">Sex<span aria-hidden="true">*</span></label>
+            <select id="sex" name="sex" required aria-describedby="sex-help">
+              <option value="">Select…</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+            <div id="sex-help" class="help">Used for copy; scoring is the same initially.</div>
+            <div class="error" data-error-for="sex"></div>
+          </div>
+
+          <div class="field">
+            <label for="height_in">Height (in)<span aria-hidden="true">*</span></label>
+            <input id="height_in" name="height_in" type="number" inputmode="decimal" step="0.1" min="1" required aria-describedby="height-help">
+            <div id="height-help" class="help">Standing height, barefoot.</div>
+            <div class="error" data-error-for="height_in"></div>
+          </div>
+
+          <div class="field">
+            <label for="leg_length_in">Leg length (hip–floor, in)<span aria-hidden="true">*</span></label>
+            <input id="leg_length_in" name="leg_length_in" type="number" inputmode="decimal" step="0.1" min="1" required aria-describedby="leg-help">
+            <div id="leg-help" class="help">From hip crease/greater trochanter to floor; inseam proxy is acceptable.</div>
+            <div class="error" data-error-for="leg_length_in"></div>
+          </div>
+
+          <div class="field">
+            <label for="wingspan_in">Wingspan (in)<span aria-hidden="true">*</span></label>
+            <input id="wingspan_in" name="wingspan_in" type="number" inputmode="decimal" step="0.1" min="1" required aria-describedby="wingspan-help">
+            <div id="wingspan-help" class="help">Arms straight out, fingertip to fingertip, against a wall.</div>
+            <div class="error" data-error-for="wingspan_in"></div>
+          </div>
+
+          <div class="field">
+            <label for="torso_length_in">Torso length (hip line–head top, in)</label>
+            <input id="torso_length_in" name="torso_length_in" type="number" inputmode="decimal" step="0.1" min="1" aria-describedby="torso-help">
+            <div id="torso-help" class="help">Optional. If omitted, derived as height − leg. Includes head—acceptable for model.</div>
+            <div class="error" data-error-for="torso_length_in"></div>
+          </div>
+        </fieldset>
+
+        <div class="actions">
+          <button type="submit" id="submitBtn">Calculate</button>
+          <button type="button" id="resetBtn" class="secondary">Reset</button>
+        </div>
+
+        <div class="form-note" role="status" aria-live="polite">
+          Required fields marked with *. Units are inches.
+        </div>
+      </form>
+    </section>
+
+    <section class="panel results" aria-labelledby="results-title">
+      <h2 id="results-title">Results</h2>
+
+      <div id="ratiosCard" class="card" aria-live="polite">
+        <h3>Ratios</h3>
+        <div class="ratios">
+          <div><span class="label">Leg %:</span> <span id="legPct">—</span></div>
+          <div><span class="label">Torso %:</span> <span id="torsoPct">—</span></div>
+          <div><span class="label">Ape index (in):</span> <span id="apeIndex">—</span></div>
+          <div><span class="label">Arm span ratio:</span> <span id="armSpanRatio">—</span></div>
+        </div>
+        <div id="flags" class="badges" aria-label="Proportion flags"></div>
+      </div>
+
+      <div id="scoresCard" class="card">
+        <h3>Ranked Movements</h3>
+        <div id="scoresList" class="list" role="list"></div>
+      </div>
+
+      <div id="conclusionCard" class="card">
+        <h3>Conclusion</h3>
+        <div id="athleteType" class="athlete-type">—</div>
+        <ul id="focusBullets" class="bullets"></ul>
+        <div class="actions">
+          <button type="button" id="copySummaryBtn" class="secondary">Copy summary</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container small muted">
+    <p>Prototype calculator. All computations client-side; no data stored.</p>
+  </footer>
+
+  <script src="./constants.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
+
+
